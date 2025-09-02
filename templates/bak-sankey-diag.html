@@ -1,0 +1,59 @@
+<html>
+  <head>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+      google.charts.load('current', {'packages':['sankey']});
+      google.charts.setOnLoadCallback(drawChart);
+	 var raw_data = json.load('../data/data.json');
+
+      function drawChart() {
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'From');
+        data.addColumn('string', 'To');
+        data.addColumn('number', 'Weight');
+        data.addRows([
+		  ['Amex Savings', 'iCloud+ with 2TB of Storage', 17.15],
+		  ['Amex Savings', 'Digital Ocean (Website VM)', 17.15],
+		  ['PNC Savings', 'Disney+, Hulu Premium', 31.53],
+		  ['Truist Money Market', 'Apple One Premier', 41.27],
+		  ['SoFi Savigns', 'DirecTV', 36.69],
+		  ['Wealthfront Cash Management', 'Terminix', 28.87],
+		  ['Apple Card Savings (RCJ])', 'iCloud+ with 2TB of Storage', 9.97],
+		  ['Capital One Savings', 'Terminix', 9.15],
+		  ['Ally Savings', 'DirecTV', 36.59],
+		  ['Discover Card Savings', 'LinkedIn Network & Job Finder', 51.16],
+		  ['Barclays Savings', 'Terminix', 9.10],
+		  ['Apple Card Savings (MDC)', 'DirecTV', 40.77],
+		  ['PayPal Savings', 'Paramount+', 20.08],
+		  ['CashApp Savings', 'LinkedIn Network & Job Finder', 22.81],
+		  ['Morgan Stanley Private Bank Savings', 'T-Mobile', 74.00],
+		  ['Robinhood Individual', 'NetFlix', 31.76],
+		  ['Household Income', 'AT&T Wireless', 629.43],
+		  ['Household Income', 'Truegreen', 84.34],
+		  ['Household Income', 'Verizon', 136.74],
+		  ['Household Income', 'Washington Gas', 212.13],
+		  ['Household Income', 'Arcadia (BG&E)', 233.32],
+		  ['Household Income', 'T-Mobile', 74.00]
+        ]);
+
+        // Sets chart options.
+        var options = {
+          width: 900,
+        };
+
+        // Instantiates and draws our chart, passing in some options.
+        var chart = new google.visualization.Sankey(document.getElementById('sankey_basic'));
+        chart.draw(data, options);
+      }
+    </script>
+  </head>
+  <body>
+	 <table>
+		<tr>
+		    <th style="width: 150px;font-size: 32px;">Funding Source</th>
+		    <th style="width: 700px;text-align: right;font-size: 32px;">Monthly Expense</th>
+		</tr>
+	 </table>
+    <div id="sankey_basic" style="width: 1500px; height: 900px;"></div>
+  </body>
+</html>

@@ -1,0 +1,80 @@
+<html>
+  <head>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+      google.charts.load('current', {'packages':['sankey']});
+      google.charts.setOnLoadCallback(drawChart);
+
+	 async function get_data() {
+		await fetch('http://127.0.0.1:5000/dataEp')
+		    .then(response => {
+			   if(!response.ok) {
+				  throw new Error(`An error occurred: ${response.status}`);
+			   }
+			   return response.text()
+		    })
+		    .then(data => {
+			    var o_data = new google.visualization.DataTable();
+			    // var o_data = new google.visualization.arrayToDataTable(Array.from(data), false);
+			    // var o_data = new google.visualization.arrayToDataTable(data, false);
+			    o_data.addColumn('string', 'From');
+			    o_data.addColumn('string', 'To');
+			    o_data.addColumn('number', 'Weight');
+			   // console.log('***** Added Columns');
+			   // alert(data);
+
+			   // o_data.addRows(data);
+			   // o_data.addRows([Object.values(data)]);
+			   o_data.addRows(JSON.parse(data));
+			   // data2 = data.replace('/\"/', "\'")
+			   // console.log(data2);
+			   // console.log('****** Added Rows');
+			    // Sets chart options.
+			    var options = {
+				 width: 900,
+			    };
+
+			    // Instantiates and draws our chart, passing in some options.
+			    var chart = new google.visualization.Sankey(document.getElementById('sankey_basic'));
+			    chart.draw(o_data, options);
+				   // console.log(o_data);
+			   })
+			   .catch(error => {
+				  console.error(`Problem occurred. ${error}`);
+		    });
+
+	 }
+
+      function drawChart() {
+			 var data = new google.visualization.DataTable();
+			 data.addColumn('string', 'From');
+			 data.addColumn('string', 'To');
+			 data.addColumn('number', 'Weight');
+			 // data.addRows(response.text());
+		a_data = ""
+			 the_data = get_data()
+		if (typeof the_data === "string") {
+		    // a_data = JSON.parse(the_data)
+		    // a_data = Array.from(the_data)
+		    console.log("********it is a string")
+		}
+		else {
+		    // a_data = Array.from(the_data)
+		    console.log(the_data)
+		    console.log(`********it is NOT a string: ${typeof the_data}`)
+		}
+			 // data.addRows(a_data);
+			 // data.addRows(the_data);
+      }
+    </script>
+  </head>
+  <body>
+	 <table>
+		<tr>
+		    <th style="width: 150px;font-size: 32px;">Funding Source</th>
+		    <th style="width: 700px;text-align: right;font-size: 32px;">Monthly Expense</th>
+		</tr>
+	 </table>
+    <div id="sankey_basic" style="width: 1500px; height: 900px;"></div>
+  </body>
+</html>
