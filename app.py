@@ -13,7 +13,7 @@ def show_sankey_chart():
 
 @app.route('/dataEp')
 def get_json_data():
-    with open('data/data.json', 'r') as f:
+    with open('data/data-v1.json', 'r') as f:
         raw_data = json.load(f)
         # raw_data = f.read().strip()
         t_array = raw_data['recordSet']
