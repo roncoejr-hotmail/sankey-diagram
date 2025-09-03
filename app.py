@@ -29,11 +29,14 @@ def get_sql_data():
     cursor = connection.cursor()
     cursor.execute("SELECT recordSet FROM diag_data")
     rows = cursor.fetchall()
-    t_array = ""
+    raw_data = "{\"recordSet\": ["
     for row in rows:
-        raw_data = json.loads(row[0])
-        t_array = raw_data['recordSet']
-        print("{}".format(t_array))
+        raw_data += ''.join(row[0]) + ","
+
+    raw_data = raw_data[:-1]
+    raw_data += "]}"
+    print("{}".format(raw_data))
+    t_array = json.loads(raw_data)['recordSet']
 
     return t_array, 200
 
