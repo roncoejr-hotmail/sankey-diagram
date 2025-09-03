@@ -1,5 +1,6 @@
 from flask import Flask, render_template
 from flask_cors import CORS
+import sqlite3
 import json
 import re
 
@@ -20,6 +21,20 @@ def get_json_data():
         # t_array = re.sub(r'"', "'", t_string)
         # t_array = raw_data
     # print("{}".format(t_array))
+    return t_array, 200
+
+@app.route('/dataEp-sqlite')
+def get_sql_data():
+    connection = sqlite3.connect("data/data.db")
+    cursor = connection.cursor()
+    cursor.execute("SELECT recordSet FROM diag_data")
+    rows = cursor.fetchall()
+    t_array = ""
+    for row in rows:
+        raw_data = json.loads(row[0])
+        t_array = raw_data['recordSet']
+        print("{}".format(t_array))
+
     return t_array, 200
 
 if __name__ == "__main__":
