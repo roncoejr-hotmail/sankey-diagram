@@ -5,8 +5,9 @@
       google.charts.load('current', {'packages':['sankey']});
       google.charts.setOnLoadCallback(drawChart);
 
-	 async function get_data() {
-		await fetch('http://127.0.0.1:5000/dataEp')
+	 async function get_data(level = "beginner") {
+		await fetch(`http://127.0.0.1:5000/dataEp-sqlite?level=${level}`)
+		// await fetch(`http://127.0.0.1:5000/dataEp-sqlite?level=beginner`)
 		// await fetch('http://172.29.195.32:5000/dataEp')
 		    .then(response => {
 			   if(!response.ok) {
@@ -24,8 +25,6 @@
 			   // console.log('***** Added Columns');
 			   // alert(data);
 
-			   // o_data.addRows(data);
-			   // o_data.addRows([Object.values(data)]);
 			   o_data.addRows(JSON.parse(data));
 			   // data2 = data.replace('/\"/', "\'")
 			   // console.log(data2);
@@ -51,9 +50,19 @@
 			 data.addColumn('string', 'From');
 			 data.addColumn('string', 'To');
 			 data.addColumn('number', 'Weight');
+
+			 const url = new URL(window.location.href);
+			 const params = new URLSearchParams(url.search);
+			 const level = params.get('level');
 			 // data.addRows(response.text());
 		a_data = ""
-			 the_data = get_data()
+		if(!(level == null)) {
+		      console.log(level)
+			 the_data = get_data(level);
+		}
+		else {
+		    the_data = get_data();
+		}
 		if (typeof the_data === "string") {
 		    // a_data = JSON.parse(the_data)
 		    // a_data = Array.from(the_data)
