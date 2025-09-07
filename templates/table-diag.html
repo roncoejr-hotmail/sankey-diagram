@@ -8,16 +8,32 @@
   <body>
 	 <table>
 		<tr>
-		    <th style="width: 250px;font-size: 32px;">Funding Source</th>
-		    <th style="width: 350px;text-align: center;font-size: 32px;">Funding Amplifier</th>
-		    <th style="width: 400px;text-align: right;font-size: 32px;">Monthly Expense</th>
+		    <th style="width: 550px;font-size: 32px;">Database Contents</th>
 		</tr>
 	 </table>
-    <div id="table_basic" style="width: 1500px; height: 900px;"></div>
+    <div id="table_basic" style="width: 500px; height: 600px;">
+    </div>
+    <div id="entry_form" method="POST">
+	   <form id="add_relationship">
+		  <select id="t_level" name="t_level">
+			 <option value="beginner">beginner</option>
+			 <option value="intermediate">intermediate</option>
+			 <option value="advanced">advanced</option>
+			 <option value="expert">expert</option>
+		  </select>
+		  <input id="t_source" name="t_source" type="text" placeholder="Enter the source"> 
+		  <input id="t_target" name="t_target" type="text" placeholder="Enter the target"> 
+		  <input id="t_value" name="t_value" type="text" placeholder="Enter the value (or weight) of the connection"> 
+		  <button id="t_submit" name="t_submit" type="submit">ADD
+		  </button>
+	   </form>
+    </div>
   </body>
     <script type="text/javascript" defer>
 	   // t_go();
 	   // u_go();
 	   x_go();
+    </script>
+    <script type="text/javascript" src="u.js">
     </script>
 </html>
