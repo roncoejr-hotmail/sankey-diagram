@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
 from dotenv import load_dotenv
 import sqlite3
@@ -23,38 +23,57 @@ def get_json_data():
         t_array = raw_data[os.environ['field_id_2']]
     return t_array, 200
 
-@app.route('/dataEp-sqlite', methods=['GET'])
+@app.route('/dataEp-sqlite', methods=['GET', 'POST'])
 def get_sql_data():
-    t_level = request.args.get('level', 'beginner')
     connection = sqlite3.connect("{}/{}.db".format(os.environ['data_dir'], os.environ['data_file']))
     cursor = connection.cursor()
-    cursor.execute("SELECT {}, {} FROM {} WHERE {} = '{}'".format( \
-            os.environ['field_id_1'], \
-            os.environ['field_id_2'], \
-            os.environ['table_name'], \
-            os.environ['field_id_1'], \
-            t_level))
-    rows = cursor.fetchall()
+    if request.method == 'GET':
+        t_level = request.args.get('level', 'beginner')
+        cursor.execute("SELECT {}, {} FROM {} WHERE {} = '{}'".format( \
+                os.environ['field_id_1'], \
+                os.environ['field_id_2'], \
+                os.environ['table_name'], \
+                os.environ['field_id_1'], \
+                t_level))
+        rows = cursor.fetchall()
+        if len(rows) > 0:
+            raw_data = '{'
+            raw_data += '\"{}\":'.format(os.environ['field_id_1'])
+            raw_data += '{'
+            raw_data += '\"{}\": ['.format(os.environ['field_id_2'])
+            for row in rows:
+                raw_data += ''.join(row[1]) + ","
 
+            raw_data = raw_data[:-1]
+            raw_data += "]}"
+            raw_data += "}"
+            print("*|*|**|*|**| {}: {}".format(t_level, raw_data))
+            t_array = json.loads(raw_data)['{}'.format(os.environ['m_field_id'])]['{}'.format(os.environ['field_id_2'])]
 
-    if len(rows) > 0:
-        raw_data = '{'
-        raw_data += '\"{}\":'.format(os.environ['field_id_1'])
-        raw_data += '{'
-        raw_data += '\"{}\": ['.format(os.environ['field_id_2'])
-        for row in rows:
-            raw_data += ''.join(row[1]) + ","
+            return t_array, 200
+        else:
+            print("*******| {}:".format(t_level))
+            return json.loads('{"recordSet": [["", "", 0.0]]}'), 200
+    elif request.method == 'POST':
+        data = request.get_json()
+        if not data:
+            return jsonify({"error": "No JSON payload provided."}), 400
 
-        raw_data = raw_data[:-1]
-        raw_data += "]}"
-        raw_data += "}"
-        print("*|*|**|*|**| {}: {}".format(t_level, raw_data))
-        t_array = json.loads(raw_data)['{}'.format(os.environ['m_field_id'])]['{}'.format(os.environ['field_id_2'])]
+        sql_add_relationship = "INSERT INTO {} ({}, {}) VALUES ('{}', '{}')"
 
-        return t_array, 200
-    else:
-        print("*******| {}:".format(t_level))
-        return json.loads('{"recordSet": [["", "", 0.0]]}'), 200
+        level = data.get('t_level', 'uncategorized')
+        source = data.get('t_source', 'uncategorized')
+        target = data.get('t_target', 'uncategorized')
+        value = data.get('t_value', 0)
+
+        entry_json = '["{}", "{}", "{}"]'.format(source, target, value)
+
+        cursor.execute(sql_add_relationship.format(os.environ["table_name"], "level_id", "recordSet", level, entry_json))
+        connection.commit()
+        connection.close()
+
+        return jsonify({"message": "Data received successfully", "level": level, "source": source, "target": target}), 200
+
 
 if __name__ == "__main__":
     app.run(debug=True)
