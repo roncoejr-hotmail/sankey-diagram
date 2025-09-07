@@ -224,3 +224,104 @@ async function v_go() {
 							 console.log(`A problem occurred. ${error}`);
 						});
 }
+
+
+
+
+function formatAccounting(value) {
+  const absValue = Math.abs(value).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  return value < 0 ? `($${absValue})` : `$${absValue}`;
+}
+
+async function x_table(data_frame) {
+    // data_frame.print();
+    d_dest = document.getElementById('table_basic');
+
+    // d_dest.innerHTML = "<table>";
+    const table = document.createElement('table');
+    table.border = '0';
+
+    // d_dest.innerHTML += "<tr><th></th></tr>";
+    const t_head = document.createElement('tr');
+    // t_head = document.createElement('td')
+    const h_cell_source = document.createElement('th');
+    h_cell_source.textContent = 'source';
+    h_cell_source.style.backgroundColor = 'lightgrey';
+    const h_cell_target = document.createElement('th');
+    h_cell_target.textContent = 'target';
+    h_cell_target.style.backgroundColor = 'lightgrey';
+    const h_cell_value = document.createElement('th');
+    h_cell_value.textContent = 'value';
+    h_cell_value.style.backgroundColor = 'lightgrey';
+    h_cell_value.style.width = '100px';
+    t_head.appendChild(h_cell_source);
+    t_head.appendChild(h_cell_target);
+    t_head.appendChild(h_cell_value);
+    table.appendChild(t_head);
+    data_frame.values.forEach(row => {
+	   const t_row = document.createElement('tr');
+	   // t_line = "<tr><td>" + (row[0]) + "</td></tr>";
+	   // t_line = `<tr><td>${row[0]}</td></tr>`;
+	   for(i = 0; i < row.length; i++) {
+		  const t_cell = document.createElement('td');
+		  if (i == 2) {
+			 t_cell.textContent = formatAccounting(row[i]);
+			 t_cell.style.textAlign = 'right';
+		  }
+		  else {
+			 t_cell.textContent = row[i];
+		  }
+		  t_row.appendChild(t_cell);
+	   }
+	   table.appendChild(t_row);
+
+	   // d_dest.innerHTML += t_line;
+    });
+    // d_dest.innerHTML += "</table>";
+    //
+    document.getElementById('table_basic').appendChild(table);
+
+    
+}
+
+//
+//
+//
+//
+//
+//
+async function x_go() {
+				    const url = new URL(window.location.href);
+				    const params = new URLSearchParams(url.search);
+				    const level = params.get('level');
+
+				    await fetch(`http://127.0.0.1:5000/dataEp-sqlite?level=${level}`)
+						.then(response => {
+						    if(!response.ok) {
+							   throw new Error(`An error occurred: ${response.status}`);
+						    }
+						    return response.text()
+						})
+						.then(data => {
+							// Sets chart options.
+						    df = new dfd.DataFrame(JSON.parse(data));
+						    df.rename({"0": "source", "1": "target", "2": "value"}, { inplace: true });
+						    arr_u = df['source'].unique();
+						    const lst_source = arr_u.values;
+
+						    const t_source = arr_u.values;
+						    const t_target = df['target'].unique().values;
+						    const t_values = df['value'].values;
+
+						    const labels = Array.prototype.concat(t_source, t_target);
+						    colors = ["red", "green", "blue", "yellow", "pink", "purple", "cyan", "magenta", "black", "white", "darkblue", "lightblue", "darkgreen", "darkred"];
+						  
+						    x_table(df);
+
+
+
+						 })
+						.catch(error => {
+							 console.log(`A problem occurred. ${error}`);
+						});
+}
